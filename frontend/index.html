@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Realtime Voting App | Fullscreen UI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex items-center justify-center p-6 md:p-12">
+
+<div class="w-full max-w-4xl flex flex-col items-center">
+    <header class="text-center mb-16">
+        <div class="relative inline-block mb-6">
+            <div class="p-5 rounded-3xl bg-indigo-500/10 border border-indigo-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div id="status-dot" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 border-4 border-[#12182b] rounded-full status-pulse"></div>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6">
+            Cloud Preference
+        </h1>
+        <p class="text-xl text-slate-400 font-medium max-w-2xl mx-auto">
+            Join the global conversation. Cast your vote and see results update in real-time across the world.
+        </p>
+    </header>
+
+    <div id="buttons" class="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-20">
+        <button onclick="handleVote('optionA')" class="vote-btn group flex flex-col items-center justify-center p-8 rounded-3xl border border-white/10 hover:border-indigo-500/50">
+            <span class="text-2xl font-bold group-hover:text-indigo-300">AWS</span>
+            <span class="text-xs text-slate-500 mt-2 uppercase tracking-tighter">Amazon</span>
+        </button>
+        <button onclick="handleVote('optionB')" class="vote-btn group flex flex-col items-center justify-center p-8 rounded-3xl border border-white/10 hover:border-blue-500/50">
+            <span class="text-2xl font-bold group-hover:text-blue-300">Azure</span>
+            <span class="text-xs text-slate-500 mt-2 uppercase tracking-tighter">Microsoft</span>
+        </button>
+        <button onclick="handleVote('optionC')" class="vote-btn group flex flex-col items-center justify-center p-8 rounded-3xl border border-white/10 hover:border-red-500/50">
+            <span class="text-2xl font-bold group-hover:text-red-300">GCP</span>
+            <span class="text-xs text-slate-500 mt-2 uppercase tracking-tighter">Google</span>
+        </button>
+        <button onclick="handleVote('optionD')" class="vote-btn group flex flex-col items-center justify-center p-8 rounded-3xl border border-white/10 hover:border-slate-500/50">
+            <span class="text-2xl font-bold group-hover:text-slate-300">Other</span>
+            <span class="text-xs text-slate-500 mt-2 uppercase tracking-tighter">Alternative</span>
+        </button>
+    </div>
+
+    <div class="w-full max-w-3xl space-y-10">
+        <div class="flex items-center justify-between border-b border-white/5 pb-4">
+            <h3 class="text-lg font-bold uppercase tracking-[0.2em] text-indigo-400">Live Statistics</h3>
+            <span id="total-votes" class="text-sm font-semibold text-slate-400 bg-white/5 px-4 py-1 rounded-full">Total: 0 votes</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+            <!-- Result Row AWS -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold text-slate-200">AWS</span>
+                    <div class="flex items-center gap-3">
+                        <span id="count-optionA" class="text-sm font-medium text-slate-500">0</span>
+                        <span id="perc-optionA" class="percentage-badge">0%</span>
+                    </div>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="bar-optionA" class="progress-bar-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Result Row Azure -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold text-slate-200">Azure</span>
+                    <div class="flex items-center gap-3">
+                        <span id="count-optionB" class="text-sm font-medium text-slate-500">0</span>
+                        <span id="perc-optionB" class="percentage-badge">0%</span>
+                    </div>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="bar-optionB" class="progress-bar-fill" style="width: 0%; background: linear-gradient(90deg, #3b82f6, #2dd4bf);"></div>
+                </div>
+            </div>
+
+            <!-- Result Row GCP -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold text-slate-200">GCP</span>
+                    <div class="flex items-center gap-3">
+                        <span id="count-optionC" class="text-sm font-medium text-slate-500">0</span>
+                        <span id="perc-optionC" class="percentage-badge">0%</span>
+                    </div>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="bar-optionC" class="progress-bar-fill" style="width: 0%; background: linear-gradient(90deg, #ef4444, #f59e0b);"></div>
+                </div>
+            </div>
+
+            <!-- Result Row Other -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold text-slate-200">Other</span>
+                    <div class="flex items-center gap-3">
+                        <span id="count-optionD" class="text-sm font-medium text-slate-500">0</span>
+                        <span id="perc-optionD" class="percentage-badge">0%</span>
+                    </div>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="bar-optionD" class="progress-bar-fill" style="width: 0%; background: linear-gradient(90deg, #64748b, #94a3b8);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
