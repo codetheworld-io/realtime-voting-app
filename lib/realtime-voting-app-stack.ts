@@ -14,6 +14,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import { NagSuppressions } from 'cdk-nag';
 
 export class RealtimeVotingAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -71,7 +72,7 @@ export class RealtimeVotingAppStack extends cdk.Stack {
     });
 
     const wsBroadcastFunction = new NodejsFunction(this, 'WsBroadcastFunction', {
-      runtime: lambda.Runtime.NODEJS_24_X,
+      ...functionDefaultOptions,
       entry: path.join(__dirname, '..', 'src', 'lambdas', 'ws-broadcast.ts'),
       handler: 'handler',
       environment: {
@@ -90,6 +91,8 @@ export class RealtimeVotingAppStack extends cdk.Stack {
       restApiName: 'VotingService',
       deployOptions: {
         stageName: 'dev',
+        throttlingRateLimit: 3,
+        throttlingBurstLimit: 5,
       },
       defaultCorsPreflightOptions: {
         allowOrigins: apigw.Cors.ALL_ORIGINS,
@@ -119,6 +122,10 @@ export class RealtimeVotingAppStack extends cdk.Stack {
       webSocketApi: wsApi,
       stageName: 'dev',
       autoDeploy: true,
+      throttle: {
+        rateLimit: 3,
+        burstLimit: 5,
+      },
     });
     const wsApiArn = cdk.Stack.of(this).formatArn({
       service: 'execute-api',
@@ -196,5 +203,13 @@ export class RealtimeVotingAppStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'FrontendUrl', {
       value: `https://${distribution.distributionDomainName}`,
     });
+    NagSuppressions.addResourceSuppressionsByPath(
+      this,
+      '/RealtimeVotingAppStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource',
+      [
+        { id: 'Serverless-LambdaDefaultMemorySize', reason: 'This is a build in custom resource' },
+        { id: 'Serverless-LambdaLatestVersion', reason: 'This is a build in custom resource' },
+      ],
+    );
   }
 }
